@@ -5,7 +5,7 @@ matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 import collections
 import scipy 
-import scipy.interpolate 
+import scipy.interpolate
 import glob
 import csv
 from scipy import optimize
@@ -16,6 +16,10 @@ import tkMessageBox
 from itertools import repeat
 import csv
 from matplotlib.backends.backend_pdf import PdfPages
+
+font_size=6
+matplotlib.rc('font', size=font_size)
+
 
 #set up the GUI labels
 master = Tk()
@@ -42,7 +46,6 @@ def graphs():
 	global fig2
 	#set up the figures
 	fig1=plt.figure(1)
-	fig1.suptitle('Complete Standard Curve', fontsize=14, fontweight='bold')
 	ax1=plt.subplot2grid((6,6), (0,0), colspan=4, rowspan=2)
 
 	ax2=plt.subplot2grid((6,6), (2,0), colspan=2)
@@ -530,7 +533,7 @@ def graphs():
 		ax9.plot(xmask1e, meanind8e[ :,1], 'mo')
 		ax9.plot(xmask1e, meanind8e[ :,1], 'm')
 
-	ax1.set_xlabel('Optical Density')
+	ax1.set_xlabel('Concentration')
 	ax1.set_ylabel('OD')
 	ax2.set_ylabel('OD')
 	ax4.set_ylabel('OD')
@@ -676,7 +679,7 @@ def graphs():
 	fig1.tight_layout()
 	fig1.subplots_adjust(wspace=2.5, hspace=1)
 	plt.show()
-	fig1.savefig('Control charts')
+	fig1.savefig('Control charts.tiff', dpi=600)
 
 	#coeffeints of variance
 	cv1=(SD1/mean1tot)*100
