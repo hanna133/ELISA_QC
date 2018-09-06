@@ -56,6 +56,7 @@ def graphs():
     fnames = fnamese = []
     
     y11 = y22 = y33 = y44 = y55 = y66 = y77 = y88 = []
+    print(y11)
     list_of_superior_y = [y11, y22, y33, y44, y55, y66, y77, y88]
     y11e = y22e = y33e = y44e = y55e = y66e = y77e = y88e = []
     meanind1 = meanind2 = meanind3 = meanind4 = meanind5 = meanind6 = meanind7 = meanind8 = []
@@ -98,7 +99,7 @@ def graphs():
             index += 1
         
         ax1.plot(list_of_x, list_of_y, 'ko', markersize=5)
-
+        print(y11)
     # test loop
     if userinput2 is'none':
         print('no test group')
@@ -203,7 +204,8 @@ def graphs():
     #format the file names for printing in the terminal, and create a count for the x axis of the control charts
     fnames=[x for item in fnames for x in repeat(item, 3)]
     length=len(fnames)
-    xmask1=list(range(length/3))
+    xmask1=list(range(int(length/3)))
+    print(xmask1, 'xmask')
     labels=[fnames]
     printable=np.array(fnames[0::3])
     printcount=np.array(list(range(len(printable))))
@@ -213,7 +215,7 @@ def graphs():
 
     fnamese=[x for item in fnamese for x in repeat(item, 3)]
     lengthe=len(fnamese)
-    xmask1e=list(range(lengthe/3))
+    xmask1e=list(range(int(lengthe/3)))
     labelse=[fnamese]
     printablee=np.array(fnamese[0::3])
     printcounte=np.array(list(range(len(printablee))))
@@ -222,12 +224,16 @@ def graphs():
     print(keye)
 
     #take the final means, then plot everything
-    mean1tot=np.mean(y11)
+    mean1tot = np.mean(y11)
     y11=np.array(y11)
     SD1=np.std(y11)
-    y11=y11.reshape(length,)
+    #y11=y11.reshape(length,)
+    print(meanind1, 1)
     meanind1=np.array(meanind1)
+    print(meanind1, 2)
     meanind1=meanind1[ :,1]
+    print(meanind1, 3)
+    print(xmask1, "xmask" )
     ax2.plot(xmask1, meanind1, 'ko', markersize=7)
     ax2.plot(xmask1, meanind1, 'k')
     ax2.axhline(y=mean1tot)
@@ -238,7 +244,7 @@ def graphs():
 
     mean1tote=np.mean(y11e)
     y11e=np.array(y11e)
-    y11e=y11e.reshape(lengthe,)
+    #y11e=y11e.reshape(lengthe,)
     meanind1e=np.array(meanind1e)
 
     if userinput2 =='none':
@@ -250,7 +256,7 @@ def graphs():
     mean2tot=np.mean(y22)
     y22=np.array(y22)
     SD2=np.std(y22)
-    y22=y22.reshape(length,)
+    #y22=y22.reshape(length,)
     meanind2=np.array(meanind2)
     meanind2=meanind2[ :,1]
     ax3.plot(xmask1, meanind2, 'ko', markersize=7)
@@ -263,7 +269,7 @@ def graphs():
 
     mean2tote=np.mean(y22e)
     y22e=np.array(y22e)
-    y22e=y22e.reshape(lengthe,)
+    #y22e=y22e.reshape(lengthe,)
     meanind2e=np.array(meanind2e)
     if userinput2 =='none':
         pass

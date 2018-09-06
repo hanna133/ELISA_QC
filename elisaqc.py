@@ -11,8 +11,8 @@ import csv
 from scipy import optimize
 from scipy import stats    
 from scipy import interpolate
-from Tkinter import *
-import tkMessageBox
+from tkinter import *
+from tkinter import messagebox
 from itertools import repeat
 import csv
 from matplotlib.backends.backend_pdf import PdfPages
@@ -43,8 +43,6 @@ e3.grid(row=2, column=1)
 e4.grid(row=3, column=1)
 e5.grid(row=4, column=1)
 
-def process_array(range)
-
 def graphs():
     global fig1
     global fig2
@@ -61,10 +59,12 @@ def graphs():
     ax9 = plt.subplot2grid((6,6), (5,2), colspan=2)
 
     #create empty lists to be filled in the loops
-    count, counte = 0
+    count = 0
+    counte = 0
     fnames = fnamese = []
     
     y11 = y22 = y33 = y44 = y55 = y66 = y77 = y88 = []
+    print(y11)
     y11e = y22e = y33e = y44e = y55e = y66e = y77e = y88e = []
     meanind1 = meanind2 = meanind3 = meanind4 = meanind5 = meanind6 = meanind7 = meanind8 = []
 
@@ -118,6 +118,7 @@ def graphs():
         y1=array1[:,1]    
         #append the values into the empty list
         y11.append(y1)
+        print(y11)
         meanind1.append(mean1)
 
         array2=array[3:6]
@@ -305,7 +306,8 @@ def graphs():
     #format the file names for printing in the terminal, and create a count for the x axis of the control charts
     fnames=[x for item in fnames for x in repeat(item, 3)]
     length=len(fnames)
-    xmask1=list(range(length/3))
+    xmask1=list(range(int(length/3)))
+    print(xmask1)
     labels=[fnames]
     printable=np.array(fnames[0::3])
     printcount=np.array(list(range(len(printable))))
@@ -315,7 +317,7 @@ def graphs():
 
     fnamese=[x for item in fnamese for x in repeat(item, 3)]
     lengthe=len(fnamese)
-    xmask1e=list(range(lengthe/3))
+    xmask1e=list(range(int(lengthe/3)))
     labelse=[fnamese]
     printablee=np.array(fnamese[0::3])
     printcounte=np.array(list(range(len(printablee))))
@@ -327,9 +329,11 @@ def graphs():
     mean1tot=np.mean(y11)
     y11=np.array(y11)
     SD1=np.std(y11)
-    y11=y11.reshape(length,)
+    #y11=y11.reshape(length,)
     meanind1=np.array(meanind1)
+    print(meanind1)
     meanind1=meanind1[ :,1]
+    print(meanind1)
     ax2.plot(xmask1, meanind1, 'ko', markersize=7)
     ax2.plot(xmask1, meanind1, 'k')
     ax2.axhline(y=mean1tot)
@@ -340,7 +344,7 @@ def graphs():
 
     mean1tote=np.mean(y11e)
     y11e=np.array(y11e)
-    y11e=y11e.reshape(lengthe,)
+    #y11e=y11e.reshape(lengthe,)
     meanind1e=np.array(meanind1e)
 
     if userinput2 =='none':
