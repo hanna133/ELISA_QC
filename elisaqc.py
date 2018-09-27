@@ -38,7 +38,7 @@ e5.grid(row=4, column=1)
 def graphs():
     global fig1
     global fig2
-    #set up the figures
+    # set up the figures
     fig1 = plt.figure(1)
     ax1 = plt.subplot2grid((6,6), (0,0), colspan=4, rowspan=2)
     ax2 = plt.subplot2grid((6,6), (2,0), colspan=2)
@@ -50,7 +50,7 @@ def graphs():
     ax8 = plt.subplot2grid((6,6), (5,0), colspan=2)
     ax9 = plt.subplot2grid((6,6), (5,2), colspan=2)
 
-    #create empty lists to be filled in the loops
+    # create empty lists to be filled in the loops
     count, counte = 0 , 0
     fnames = []
     fnamese = []
@@ -63,16 +63,8 @@ def graphs():
     y66 = []
     y77 = []
     y88 = []
+
     list_of_superior_y = [y11, y22, y33, y44, y55, y66, y77, y88]
-    
-    y11e = []
-    y22e = []
-    y33e = []
-    y44e = []
-    y55e = []
-    y66e = []
-    y77e = []
-    y88e = []
     
     meanind1 = []
     meanind2 = []
@@ -83,17 +75,8 @@ def graphs():
     meanind7 = []
     meanind8 = []
     
-    list_of_meanind = [meanind1 , meanind2 , meanind3 , meanind4 , 
-                       meanind5 , meanind6 , meanind7 , meanind8]
-
-    y11e = []
-    y22e = []
-    y33e = []
-    y44e = []
-    y55e = []
-    y66e = []
-    y77e = []
-    y88e = []
+    list_of_meanind = [meanind1, meanind2, meanind3, meanind4,
+                       meanind5, meanind6, meanind7, meanind8]
     
     meanind1e = []
     meanind2e = []
@@ -104,7 +87,15 @@ def graphs():
     meanind7e = []
     meanind8e = []
 
-    #convert the userinputs to integers
+    list_of_meaninde = [meanind1e, meanind2e, meanind3e, meanind4e,
+                        meanind5e, meanind6e, meanind7e, meanind8e]
+    conc1, conc2, conc3, conc4, conc5, conc6, conc7, conc8 = 0, 0, 0, 0, 0, 0, 0, 0
+    list_of_conc = [conc1, conc2, conc3, conc4, conc5, conc6, conc7, conc8]
+
+    print(type(list_of_conc))
+
+    # convert the userinputs to integers
+
     userinput1 = e1.get()
     userinput2 = e2.get()
     userinput3 = e3.get()
@@ -125,299 +116,88 @@ def graphs():
         list_of_x = []
         list_of_y = []
         index = 0
-        
+        print(type(list_of_conc))
         for elements in list_of_slices:            
-            x, y , mean = helper.get_means(elements)           
+            x, y, mean, concentrations = helper.get_means(elements)
             list_of_x.append(x)
             list_of_y.append(y)
             list_of_superior_y[index].append(y)
             list_of_meanind[index].append(mean)
+            list_of_conc[index] = np.mean(concentrations)
             index += 1
-        print(meanind1)
         ax1.plot(list_of_x, list_of_y, 'ko', markersize=5)
 
     # test loop
     if userinput2 is'none':
         print('no test group')
     else:
-        for files in glob.glob("*%s.csv"%(userinput2)) :
-            counte=counte+1
+        for files in glob.glob("*%s.csv"%userinput2):
+            counte = counte+1
             fnamese.append(files)
-            arraye=np.genfromtxt(files, delimiter=';',skip_header=userinput3-1, 
-                            usecols=(userinput4-1 , userinput5-1))
+            array = np.genfromtxt(files, delimiter=';', skip_header=userinput3-1,
+                                  usecols=(userinput4-1, userinput5-1))
 
-            array1e=arraye[0:3]
-            conc1e=array1e[:,0]
-            conc1e = conc1e[np.logical_not(np.isnan(conc1e))]
-            inds1e=np.where(np.isnan(array1e))
-            array1e[inds1e]=np.take(conc1e, inds1e[1])
-            mean1e=np.mean(array1e, axis=0)
-            x1e=array1e[:,0]
-            y1e=array1e[:,1]    
-            y11e.append(y1e)
-            meanind1e.append(mean1e)
+            list_of_slices = [array[0:3], array[3:6], array[6:9], array[9:12],
+                              array[12:15], array[15:18], array[18:21], array[21:24]]
+            list_of_x = []
+            list_of_y = []
+            index = 0
 
-            array2e=arraye[3:6]
-            conc2e=array2e[:,0]
-            conc2e = conc2e[np.logical_not(np.isnan(conc2e))]
-            inds2e=np.where(np.isnan(array2e))
-            array2e[inds2e]=np.take(conc2e, inds2e[1])
-            mean2e=np.mean(array2e, axis=0)
-            x2e=array2e[:,0]
-            y2e=array2e[:,1]    
-            y22e.append(y2e)
-            meanind2e.append(mean2e)
+            for elements in list_of_slices:
+                x, y, mean, concentrations = helper.get_means(elements)
+                list_of_x.append(x)
+                list_of_y.append(y)
+                list_of_meaninde[index].append(mean)
+                index += 1
 
-            array3e=arraye[6:9]
-            conc3e=array3e[:,0]
-            conc3e = conc3e[np.logical_not(np.isnan(conc3e))]
-            inds3e=np.where(np.isnan(array3e))
-            array3e[inds3e]=np.take(conc3e, inds3e[1])
-            mean3e=np.mean(array3e, axis=0)
-            x3e=array3e[:,0]
-            y3e=array3e[:,1]    
-            y33e.append(y3e)
-            meanind3e.append(mean3e)
+            ax1.plot(list_of_x, list_of_y, 'mo', markersize=5)
 
-            array4e=arraye[9:12]
-            conc4e=array4e[:,0]
-            conc4e = conc4e[np.logical_not(np.isnan(conc4e))]
-            inds4e=np.where(np.isnan(array4e))
-            array4e[inds4e]=np.take(conc4e, inds4e[1])
-            mean4e=np.mean(array4e, axis=0)
-            x4e=array4e[:,0]
-            y4e=array4e[:,1]    
-            y44e.append(y4e)
-            meanind4e.append(mean4e)
-
-            array5e=arraye[12:15]
-            conc5e=array5e[:,0]
-            conc5e = conc5e[np.logical_not(np.isnan(conc5e))]
-            inds5e=np.where(np.isnan(array5e))
-            array5e[inds5e]=np.take(conc5e, inds5e[1])
-            mean5e=np.mean(array5e, axis=0)
-            x5e=array5e[:,0]
-            y5e=array5e[:,1]    
-            y55e.append(y5e)
-            meanind5e.append(mean5e)
-
-            array6e=arraye[15:18]
-            conc6e=array6e[:,0]
-            conc6e = conc6e[np.logical_not(np.isnan(conc6e))]
-            inds6e=np.where(np.isnan(array6e))
-            array6e[inds6e]=np.take(conc6e, inds6e[1])
-            mean6e=np.mean(array6e, axis=0)
-            x6e=array6e[:,0]
-            y6e=array6e[:,1]    
-            y66e.append(y6e)
-            meanind6e.append(mean6e)
-
-            array7e=arraye[18:21]
-            conc7e=array7e[:,0]
-            conc7e = conc7e[np.logical_not(np.isnan(conc7e))]
-            inds7e=np.where(np.isnan(array7e))
-            array7e[inds7e]=np.take(conc7e, inds7e[1])
-            mean7e=np.mean(array7e, axis=0)
-            x7e=array7e[:,0]
-            y7e=array7e[:,1]    
-            y77e.append(y7e)
-            meanind7e.append(mean7e)
-
-            array8e=arraye[21:24]
-            conc8e=array8e[:,0]
-            conc8e = conc8e[np.logical_not(np.isnan(conc8e))]
-            inds8e=np.where(np.isnan(array8e))
-            array8e[inds8e]=np.take(conc8e, inds8e[1])
-            mean8e=np.mean(array8e, axis=0)
-            x8e=array8e[:,0]
-            y8e=array8e[:,1]    
-            y88e.append(y8e)
-            meanind8e.append(mean8e)
-            
-            x=np.concatenate((x1e, x2e, x3e, x4e, x5e, x6e, x7e, x8e))
-            y=np.concatenate((y1e, y2e, y3e, y4e, y5e, y6e, y7e, y8e))
-            ax1.plot(x,y, 'mo', markersize=5)
-    #format the file names for printing in the terminal, and create a count for the x axis of the control charts
-    fnames=[x for item in fnames for x in repeat(item, 3)]
-    length=len(fnames)
-    xmask1=list(range(length//3))
-    printable=np.array(fnames[0::3])
-    printcount=np.array(list(range(len(printable))))
-    key=np.column_stack((printcount, printable))
+    # format the file names for printing in the terminal,
+    # and create a count for the x axis of the control charts
+    fnames = [x for item in fnames for x in repeat(item, 3)]
+    length = len(fnames)
+    xmask1 = list(range(length//3))
+    printable = np.array(fnames[0::3])
+    printcount = np.array(list(range(len(printable))))
+    key = np.column_stack((printcount, printable))
     print('Standards Key')
     print(key)
 
-    fnamese=[x for item in fnamese for x in repeat(item, 3)]
-    lengthe=len(fnamese)
-    xmask1e=list(range(lengthe//3))
-    printablee=np.array(fnamese[0::3])
-    printcounte=np.array(list(range(len(printablee))))
+    fnamese = [x for item in fnamese for x in repeat(item, 3)]
+    lengthe = len(fnamese)
+    xmask1e = list(range(lengthe//3))
+    printablee = np.array(fnamese[0::3])
+    printcounte = np.array(list(range(len(printablee))))
     keye=np.column_stack((printcounte, printablee))
     print('Test Key')
     print(keye)
 
-    #take the final means, then plot everything
-    mean1tot=np.mean(y11)
-    y11=np.array(y11)
-    SD1=np.std(y11)
-    meanind1=np.array(meanind1)
-    meanind1=meanind1[ :,1]
-    ax2.plot(xmask1, meanind1, 'ko', markersize=7)
-    ax2.plot(xmask1, meanind1, 'k')
-    ax2.axhline(y=mean1tot)
-    ax2.axhline(y=(mean1tot+SD1*2), color='g', linewidth=2)
-    ax2.axhline(y=(mean1tot-SD1*2), color='g', linewidth=2)
-    ax2.axhline(y=(mean1tot+SD1*3), color='r', linewidth=2)
-    ax2.axhline(y=(mean1tot-SD1*3), color='r', linewidth=2)
-    
-    meanind1e=np.array(meanind1e)
+    # take the final means, then plot everything
+    SD1, mean1tot, meanind1 = helper.plot_everything(ax2, y11, xmask1, meanind1)
+    SD2, mean2tot, meanind2 = helper.plot_everything(ax3, y22, xmask1, meanind2)
+    SD3, mean3tot, meanind3 = helper.plot_everything(ax4, y33, xmask1, meanind3)
+    SD4, mean4tot, meanind4 = helper.plot_everything(ax5, y44, xmask1, meanind4)
+    SD5, mean5tot, meanind5 = helper.plot_everything(ax6, y55, xmask1, meanind5)
+    SD6, mean6tot, meanind6 = helper.plot_everything(ax7, y66, xmask1, meanind6)
+    SD7, mean7tot, meanind7 = helper.plot_everything(ax8, y77, xmask1, meanind7)
+    SD8, mean8tot, meanind8 = helper.plot_everything(ax9, y88, xmask1, meanind8)
 
-    if userinput2 =='none':
+    meanind1e = np.array(meanind1e)
+    meanind2e = np.array(meanind2e)
+    meanind3e = np.array(meanind3e)
+    meanind4e = np.array(meanind4e)
+    meanind5e = np.array(meanind5e)
+    meanind6e = np.array(meanind6e)
+    meanind7e = np.array(meanind7e)
+    meanind8e = np.array(meanind8e)
+
+    list_of_axes = [ax2, ax3, ax4, ax5, ax6, ax7, ax8, ax9]
+    if userinput2 == 'none':
         pass
     else:
-        ax2.plot(xmask1e, meanind1e[ :,1], 'mo')
-        ax2.plot(xmask1e, meanind1e[ :,1], 'm')
-
-    mean2tot=np.mean(y22)
-    y22=np.array(y22)
-    SD2=np.std(y22)
-    meanind2=np.array(meanind2)
-    meanind2=meanind2[ :,1]
-    ax3.plot(xmask1, meanind2, 'ko', markersize=7)
-    ax3.plot(xmask1, meanind2, 'k')
-    ax3.axhline(y=mean2tot)
-    ax3.axhline(y=(mean2tot+SD2*2), color='g', linewidth=2)
-    ax3.axhline(y=(mean2tot-SD2*2), color='g', linewidth=2)
-    ax3.axhline(y=(mean2tot+SD2*3), color='r', linewidth=2)
-    ax3.axhline(y=(mean2tot-SD2*3), color='r', linewidth=2)
-
-    meanind2e=np.array(meanind2e)
-    if userinput2 =='none':
-        pass
-    else:
-        ax3.plot(xmask1e, meanind2e[ :,1], 'm')
-        ax3.plot(xmask1e, meanind2e[ :,1], 'mo')
-    print(meanind1, 'meanind1')
-    print(meanind2, 'meanind2')
-    mean3tot=np.mean(y33)
-    y33=np.array(y33)
-    SD3=np.std(y33)
-    meanind3=np.array(meanind3)
-    meanind3=meanind3[ :,1]
-    ax4.plot(xmask1, meanind3, 'ko', markersize=7)
-    ax4.plot(xmask1, meanind3, 'k', linewidth=2)
-    ax4.axhline(y=mean3tot)
-    ax4.axhline(y=(mean3tot+SD3*2), color='g', linewidth=2)
-    ax4.axhline(y=(mean3tot-SD3*2), color='g', linewidth=2)
-    ax4.axhline(y=(mean3tot+SD3*3), color='r', linewidth=2)
-    ax4.axhline(y=(mean3tot-SD3*3), color='r', linewidth=2)
-
-    meanind3e=np.array(meanind3e)
-    if userinput2 =='none':
-        pass
-    else:
-        ax4.plot(xmask1e, meanind3e[ :,1], 'mo')
-        ax4.plot(xmask1e, meanind3e[ :,1], 'm')
-
-    mean4tot=np.mean(y44)
-    y44=np.array(y44)
-    SD4=np.std(y44)
-    meanind4=np.array(meanind4)
-    meanind4=meanind4[ :,1]
-    ax5.plot(xmask1, meanind4, 'ko', markersize=7)
-    ax5.plot(xmask1, meanind4, 'k', linewidth=2)
-    ax5.axhline(y=mean4tot)
-    ax5.axhline(y=(mean4tot+SD4*2), color='g', linewidth=2)
-    ax5.axhline(y=(mean4tot-SD4*2), color='g', linewidth=2)
-    ax5.axhline(y=(mean4tot+SD4*3), color='r', linewidth=2)
-    ax5.axhline(y=(mean4tot-SD4*3), color='r', linewidth=2)
-
-    meanind4e=np.array(meanind4e)
-    if userinput2 =='none':
-        pass
-    else:
-        ax5.plot(xmask1e, meanind4e[ :,1], 'mo')
-        ax5.plot(xmask1e, meanind4e[ :,1], 'm')
-
-    mean5tot=np.mean(y55)
-    y55=np.array(y55)
-    SD5=np.std(y55)
-    meanind5=np.array(meanind5)
-    meanind5=meanind5[ :,1]
-    ax6.plot(xmask1, meanind5, 'ko', markersize=7)
-    ax6.plot(xmask1, meanind5, 'k')
-    ax6.axhline(y=mean5tot)
-    ax6.axhline(y=(mean5tot+SD5*2), color='g', linewidth=2)
-    ax6.axhline(y=(mean5tot-SD5*2), color='g', linewidth=2)
-    ax6.axhline(y=(mean5tot+SD5*3), color='r', linewidth=2)
-    ax6.axhline(y=(mean5tot-SD5*3), color='r', linewidth=2)
-
-    meanind5e=np.array(meanind5e)
-    if userinput2 =='none':
-        pass
-    else:
-        ax6.plot(xmask1e, meanind5e[ :,1], 'mo')
-        ax6.plot(xmask1e, meanind5e[ :,1], 'm')
-
-    mean6tot=np.mean(y66)
-    y66=np.array(y66)
-    SD6=np.std(y66)
-    meanind6=np.array(meanind6)
-    meanind6=meanind6[ :,1]
-    ax7.plot(xmask1, meanind6, 'ko', markersize=7)
-    ax7.plot(xmask1, meanind6, 'k')
-    ax7.axhline(y=mean6tot)
-    ax7.axhline(y=(mean6tot+SD6*2), color='g', linewidth=2)
-    ax7.axhline(y=(mean6tot-SD6*2), color='g', linewidth=2)
-    ax7.axhline(y=(mean6tot+SD6*3), color='r', linewidth=2)
-    ax7.axhline(y=(mean6tot-SD6*3), color='r', linewidth=2)
-
-
-    meanind6e=np.array(meanind6e)
-    if userinput2 =='none':
-        pass
-    else:
-        ax7.plot(xmask1e, meanind6e[ :,1], 'mo')
-        ax7.plot(xmask1e, meanind6e[ :,1], 'm')
-
-    mean7tot=np.mean(y77)
-    y77=np.array(y77)
-    SD7=np.std(y77)
-    meanind7=np.array(meanind7)
-    meanind7=meanind7[ :,1]
-    ax8.plot(xmask1, meanind7, 'ko', markersize=7)
-    ax8.plot(xmask1, meanind7, 'k')
-    ax8.axhline(y=mean7tot)
-    ax8.axhline(y=(mean7tot+SD7*2), color='g', linewidth=2)
-    ax8.axhline(y=(mean7tot-SD7*2), color='g', linewidth=2)
-    ax8.axhline(y=(mean7tot+SD7*3), color='r', linewidth=2)
-    ax8.axhline(y=(mean7tot-SD7*3), color='r', linewidth=2)
-    meanind7e=np.array(meanind7e)
-    if userinput2 =='none':
-        pass
-    else:
-        ax8.plot(xmask1e, meanind7e[ :,1], 'mo')
-        ax8.plot(xmask1e, meanind7e[ :,1], 'm')
-
-    mean8tot=np.mean(y88)
-    y88=np.array(y88)
-    SD8=np.std(y88)
-    meanind8=np.array(meanind8)
-    meanind8=meanind8[ :,1]
-    ax9.plot(xmask1, meanind8, 'ko', markersize=7)
-    ax9.plot(xmask1, meanind8, 'k')
-    ax9.axhline(y=mean8tot)
-    ax9.axhline(y=(mean8tot+SD8*2), color='g', linewidth=2)
-    ax9.axhline(y=(mean8tot-SD8*2), color='g', linewidth=2)
-    ax9.axhline(y=(mean8tot+SD8*3), color='r', linewidth=2)
-    ax9.axhline(y=(mean8tot-SD8*3), color='r', linewidth=2)
-
-    meanind8e=np.array(meanind8e)
-    if userinput2 =='none':
-        pass
-    else:
-        ax9.plot(xmask1e, meanind8e[ :,1], 'mo')
-        ax9.plot(xmask1e, meanind8e[ :,1], 'm')
+        for ax in list_of_axes:
+            ax.plot(xmask1e, meanind1e[:, 1], 'mo')
+            ax.plot(xmask1e, meanind1e[:, 1], 'm')
 
     ax1.set_xlabel('Concentration')
     ax1.set_ylabel('OD')
@@ -425,14 +205,10 @@ def graphs():
     ax4.set_ylabel('OD')
     ax6.set_ylabel('OD')
     ax8.set_ylabel('OD')
-    ax2.set_xlabel('%s ug/mL' %conc1)
-    ax3.set_xlabel('%s ug/mL'%conc2)
-    ax4.set_xlabel('%s ug/mL'%conc3)
-    ax5.set_xlabel('%s ug/mL'%conc4)
-    ax6.set_xlabel('%s ug/mL'%conc5)
-    ax7.set_xlabel('%s ug/mL'%conc6)
-    ax8.set_xlabel('%s ug/mL'%conc7)
-    ax9.set_xlabel('%s ug/mL'%conc8)
+
+    for counter, value in enumerate(list_of_axes):
+        value.set_xlabel('%s ug/mL' % list_of_conc[counter])
+
 
     out21=[np.where(np.logical_or(meanind1>mean1tot+SD1*2, meanind1<mean1tot-SD1*2))]
     out31=[np.where(np.logical_or(meanind1>mean1tot+SD1*3, meanind1<mean1tot-SD1*3))]
