@@ -39,12 +39,10 @@ def print_outside_sd(printable, meanind, meantot, meaninde, userinput2, sd, conc
     """
     if userinput2 == 'none':
         meanind = meaninde
-    out2 = np.take(printable,
-                        [np.where(np.logical_or(meanind > meantot+sd*2,
-                                                meanind < meantot-sd*2))])
-    out3 = np.take(printable,
-                        [np.where(np.logical_or(meanind > meantot+sd*3,
-                                                meanind < meantot-sd*3))])
+    if (meanind > meantot+sd*2).any or (meanind < meantot-sd*2).any:
+        print("Control set outside 2SD at %s: \n %s" % (conc, printable))
+    if (meanind > meantot+sd*3).any or (meanind < meantot-sd*3).any():
+        print("Control set outside 3SD at %s: \n %s" % (conc, printable))
 
-    print("Control set outside 2SD at %s: \n %s" % (conc, out2))
-    print("Control set outside 3SD at %s: \n %s" % (conc, out3))
+
+

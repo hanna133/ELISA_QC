@@ -6,7 +6,8 @@ import csv
 from tkinter import *
 from tkinter import messagebox
 from itertools import repeat
-import helper, get_c_point
+import helper
+import get_c_point
 
 font_size = 6
 matplotlib.rc('font', size=font_size)
@@ -37,7 +38,7 @@ e5.grid(row=4, column=1)
 
 def graphs():
     global fig1
-    # set up the figures
+    # Set up the figures
     fig1 = plt.figure(1)
     ax1 = plt.subplot2grid((6, 6), (0, 0), colspan=4, rowspan=2)
     ax2 = plt.subplot2grid((6, 6), (2, 0), colspan=2)
@@ -49,12 +50,11 @@ def graphs():
     ax8 = plt.subplot2grid((6, 6), (5, 0), colspan=2)
     ax9 = plt.subplot2grid((6, 6), (5, 2), colspan=2)
 
-    # create empty lists to be filled in the loops
+    # Create empty lists to be filled in the loops
     fnames = []
     fnamese = []
 
-    # convert the userinputs to integers
-
+    # Convert the userinputs to integers
     userinput1 = e1.get()
     userinput2 = e2.get()
     userinput3 = e3.get()
@@ -68,12 +68,7 @@ def graphs():
     list_of_points = []
     list_of_test_points = []
     list_of_axes = [ax2, ax3, ax4, ax5, ax6, ax7, ax8, ax9]
-    list_of_final_means = []
-    list_of_sd = []
-    list_of_cv = []
-    list_of_means = []
     list_of_conc = []
-    list_of_mean_test = []
 
     # Extract data of good files
     for files in glob.glob("*%s.csv" % userinput1):
@@ -120,7 +115,7 @@ def graphs():
     list_of_test_points = np.array(np.split(
         np.array(list_of_test_points), len(fnamese)))
 
-    # format the file names for printing in the terminal,
+    # Format the file names for printing in the terminal,
     # and create a count for the x axis of the control charts
     # TO REFACTOR
     fnames = [x for item in fnames for x in repeat(item, 3)]
@@ -140,21 +135,24 @@ def graphs():
     keye = np.column_stack((printcounte, printablee))
     print('Test Key')
     print(keye)
+    list_of_final_points = []
+    list_of_final_test_points = []
 
     # take the final means, then plot everything
     for counter, value in enumerate(list_of_axes):
-        sd, final_mean, mean = helper.get_final_mean(list_of_points[:, counter])
-        helper.plot_everything(value, sd, final_mean, mean, xmask1)
-        list_of_final_means.append(final_mean)
-        list_of_sd.append(sd)
-        list_of_means.append(mean)
-        _, _, test_mean = helper.get_final_mean(list_of_test_points[:, counter])
-        list_of_mean_test.append(test_mean)
+        final_point = get_c_point.Final_point(list_of_points[:, counter])
+        final_test_point = get_c_point.Final_point(list_of_test_points[:, counter])
+        helper.plot_everything(value, final_point.get_sd(),
+                               final_point.get_y(),
+                               final_point.get_mean(), xmask1)
+        list_of_final_points.append(final_point)
+        list_of_final_test_points.append(final_test_point)
 
     if userinput2 is not 'none':
         for counter, ax in enumerate(list_of_axes):
-            ax.plot(xmask1e, list_of_mean_test[counter][1], 'mo')
-            ax.plot(xmask1e, list_of_mean_test[counter][1], 'm')
+            ax.plot(xmask1e, list_of_final_test_points[counter].get_mean(), 'mo')
+            ax.plot(xmask1e, list_of_final_test_points[counter].get_mean(), 'm')
+            ax.set_xlabel('%s ug/mL' % list_of_conc[counter])
 
     ax1.set_xlabel('Concentration')
     ax1.set_ylabel('OD')
@@ -163,19 +161,15 @@ def graphs():
     ax6.set_ylabel('OD')
     ax8.set_ylabel('OD')
 
-    for counter, value in enumerate(list_of_axes):
-        value.set_xlabel('%s ug/mL' % list_of_conc[counter])
-
-    # Coeffs of variance
-    for counter, value in enumerate(list_of_final_means):
-        list_of_cv.append((list_of_sd[counter] /
-                           value) * 100)
-
     # Prints where there is a point outside 2 or 3 SD
-    for counter, item in enumerate(list_of_means):
-        helper.print_outside_sd(printable, item, list_of_final_means[counter],
-                                list_of_mean_test[counter], userinput2,
-                                list_of_sd[counter], list_of_conc[counter])
+    for counter, item in enumerate(list_of_final_points):
+        helper.print_outside_sd(printable,
+                                list(map(get_c_point.Point.get_mean, list_of_points[:, counter])),
+                                item.get_y(),
+                                list_of_final_test_points[counter].get_mean(),
+                                userinput2,
+                                item.get_sd(),
+                                list_of_conc[counter])
 
     # Figure plotting
     fig1.tight_layout()
@@ -184,20 +178,25 @@ def graphs():
     fig1.savefig('Control charts.tiff', dpi=600)
 
     # File saving
-    filename = 'ELISASTATS.csv'
-    header = ['Concentration', 'Mean OD', 'SD', 'CV']
-    rows = map( None, list_of_conc, list_of_final_means, list_of_sd, list_of_cv)
-    with open(filename, 'wb') as f:
-        writer = csv.writer(f)
-        writer.writerow(header)
-        for row in rows:
+
+    columns = [list_of_conc,
+               list(map(get_c_point.Final_point.get_y, list_of_final_points)),
+               list(map(get_c_point.Final_point.get_sd, list_of_final_points)),
+               list(map(get_c_point.Final_point.get_cv, list_of_final_points))]
+
+    with open('ELISASTATS.csv', 'w',  encoding='utf-8') as f:
+        writer = csv.writer(f, delimiter=";")
+        writer.writerow(['Concentration', 'Mean OD', 'SD', 'CV'])
+        for row in zip(*columns):
             writer.writerow(row)
 
 
 def popup():
     messagebox.showinfo(
         "Help",
-        "Tag must appear immediately prior to the .csv \n Example: if the included tag is 'good', and test tag is 'test' \n appropriate file naming could be Plate1good.csv and Plate1test.csv \n For more help, see user manual")
+        "Tag must appear immediately prior to the .csv \n Example: "
+        "if the included tag is 'good', and test tag is 'test' \n appropriate file "
+        "naming could be Plate1good.csv and Plate1test.csv \n For more help, see user manual")
 
 
 Button(master, text='Run', command=graphs).grid(row=5, column=0, sticky=W, pady=4)
