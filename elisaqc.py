@@ -6,7 +6,7 @@ import csv
 from tkinter import *
 from tkinter import messagebox
 from itertools import repeat
-import helper
+import helper, get_c_point
 
 font_size = 6
 matplotlib.rc('font', size=font_size)
@@ -50,48 +50,8 @@ def graphs():
     ax9 = plt.subplot2grid((6, 6), (5, 2), colspan=2)
 
     # create empty lists to be filled in the loops
-    count, counte = 0, 0
     fnames = []
     fnamese = []
-    
-    y11 = []
-    y22 = []
-    y33 = []
-    y44 = []
-    y55 = []
-    y66 = []
-    y77 = []
-    y88 = []
-
-    list_of_superior_y = [y11, y22, y33, y44, y55, y66, y77, y88]
-    
-    meanind1 = []
-    meanind2 = []
-    meanind3 = []
-    meanind4 = []
-    meanind5 = []
-    meanind6 = []
-    meanind7 = []
-    meanind8 = []
-    
-    list_of_meanind = [meanind1, meanind2, meanind3, meanind4,
-                       meanind5, meanind6, meanind7, meanind8]
-    
-    meanind1e = []
-    meanind2e = []
-    meanind3e = []
-    meanind4e = []
-    meanind5e = []
-    meanind6e = []
-    meanind7e = []
-    meanind8e = []
-
-    list_of_meaninde = [meanind1e, meanind2e, meanind3e, meanind4e,
-                        meanind5e, meanind6e, meanind7e, meanind8e]
-    conc1, conc2, conc3, conc4, conc5, conc6, conc7, conc8 = 0, 0, 0, 0, 0, 0, 0, 0
-    list_of_conc = [conc1, conc2, conc3, conc4, conc5, conc6, conc7, conc8]
-
-    print(type(list_of_conc))
 
     # convert the userinputs to integers
 
@@ -103,56 +63,66 @@ def graphs():
     userinput4 = int(userinput4)
     userinput5 = e5.get()
     userinput5 = int(userinput5)
-    
-    # standards loop
-    for files in glob.glob("*%s.csv" % userinput1):
-        count = count+1
-        fnames.append(files)
-        array = np.genfromtxt(files, delimiter=';', skip_header=userinput3-1,
-                              usecols=(userinput4-1, userinput5-1))
-        list_of_slices = [array[0:3], array[3:6], array[6:9], array[9:12],
-                          array[12:15], array[15:18], array[18:21], array[21:24]]
-        list_of_x = []
-        list_of_y = []
-        index = 0
-        print(type(list_of_conc))
-        for elements in list_of_slices:            
-            x, y, mean, concentrations = helper.get_means(elements)
-            list_of_x.append(x)
-            list_of_y.append(y)
-            list_of_superior_y[index].append(y)
-            list_of_meanind[index].append(mean)
-            list_of_conc[index] = np.mean(concentrations)
-            index += 1
-        ax1.plot(list_of_x, list_of_y, 'ko', markersize=5)
 
-    # test loop
-    if userinput2 is'none':
-        print('no test group')
-    else:
+    # Initialise lists
+    list_of_points = []
+    list_of_test_points = []
+    list_of_axes = [ax2, ax3, ax4, ax5, ax6, ax7, ax8, ax9]
+    list_of_final_means = []
+    list_of_sd = []
+    list_of_cv = []
+    list_of_means = []
+    list_of_conc = []
+    list_of_mean_test = []
+
+    # Extract data of good files
+    for files in glob.glob("*%s.csv" % userinput1):
+        fnames.append(files)
+        array = np.genfromtxt(files, delimiter=';',
+                              skip_header=userinput3-1,
+                              usecols=(userinput4-1, userinput5-1))
+
+        list_of_slices = [array[0:3], array[3:6], array[6:9], array[9:12],
+                          array[12:15], array[15:18], array[18:21],
+                          array[21:24]]
+        for elements in list_of_slices:
+            point = get_c_point.Point(elements)
+            list_of_points.append(point)
+            list_of_conc.append(np.mean(point.get_concentration()))
+
+        ax1.plot(list(map(get_c_point.Point.get_x, list_of_points)),
+                 list(map(get_c_point.Point.get_y, list_of_points)),
+                 'ko', markersize=5)
+
+    # Extract data on the files you want to test
+    if userinput2 is not 'none':
         for files in glob.glob("*%s.csv" % userinput2):
-            counte = counte+1
             fnamese.append(files)
-            array = np.genfromtxt(files, delimiter=';', skip_header=userinput3-1,
+            array = np.genfromtxt(files, delimiter=';',
+                                  skip_header=userinput3-1,
                                   usecols=(userinput4-1, userinput5-1))
 
             list_of_slices = [array[0:3], array[3:6], array[6:9], array[9:12],
-                              array[12:15], array[15:18], array[18:21], array[21:24]]
-            list_of_x = []
-            list_of_y = []
-            index = 0
-
+                              array[12:15], array[15:18], array[18:21],
+                              array[21:24]]
             for elements in list_of_slices:
-                x, y, mean, concentrations = helper.get_means(elements)
-                list_of_x.append(x)
-                list_of_y.append(y)
-                list_of_meaninde[index].append(mean)
-                index += 1
+                point = get_c_point.Point(elements)
+                list_of_test_points.append(point)
+            ax1.plot(list(map(get_c_point.Point.get_x, list_of_test_points)),
+                     list(map(get_c_point.Point.get_y, list_of_test_points)),
+                     'mo', markersize=5)
+    else:
+        print('no test group')
 
-            ax1.plot(list_of_x, list_of_y, 'mo', markersize=5)
+    # Give a table of each point by concentration
+    list_of_points = np.array(np.split(
+        np.array(list_of_points), len(fnames)))
+    list_of_test_points = np.array(np.split(
+        np.array(list_of_test_points), len(fnamese)))
 
     # format the file names for printing in the terminal,
     # and create a count for the x axis of the control charts
+    # TO REFACTOR
     fnames = [x for item in fnames for x in repeat(item, 3)]
     length = len(fnames)
     xmask1 = list(range(length//3))
@@ -172,34 +142,19 @@ def graphs():
     print(keye)
 
     # take the final means, then plot everything
-    SD1, mean1tot, meanind1 = helper.plot_everything(ax2, y11, xmask1, meanind1)
-    SD2, mean2tot, meanind2 = helper.plot_everything(ax3, y22, xmask1, meanind2)
-    SD3, mean3tot, meanind3 = helper.plot_everything(ax4, y33, xmask1, meanind3)
-    SD4, mean4tot, meanind4 = helper.plot_everything(ax5, y44, xmask1, meanind4)
-    SD5, mean5tot, meanind5 = helper.plot_everything(ax6, y55, xmask1, meanind5)
-    SD6, mean6tot, meanind6 = helper.plot_everything(ax7, y66, xmask1, meanind6)
-    SD7, mean7tot, meanind7 = helper.plot_everything(ax8, y77, xmask1, meanind7)
-    SD8, mean8tot, meanind8 = helper.plot_everything(ax9, y88, xmask1, meanind8)
+    for counter, value in enumerate(list_of_axes):
+        sd, final_mean, mean = helper.get_final_mean(list_of_points[:, counter])
+        helper.plot_everything(value, sd, final_mean, mean, xmask1)
+        list_of_final_means.append(final_mean)
+        list_of_sd.append(sd)
+        list_of_means.append(mean)
+        _, _, test_mean = helper.get_final_mean(list_of_test_points[:, counter])
+        list_of_mean_test.append(test_mean)
 
-    list_of_meantot = [mean1tot, mean2tot, mean3tot, mean4tot, mean5tot,
-                       mean6tot, mean7tot, mean8tot]
-
-    meanind1e = np.array(meanind1e)
-    meanind2e = np.array(meanind2e)
-    meanind3e = np.array(meanind3e)
-    meanind4e = np.array(meanind4e)
-    meanind5e = np.array(meanind5e)
-    meanind6e = np.array(meanind6e)
-    meanind7e = np.array(meanind7e)
-    meanind8e = np.array(meanind8e)
-
-    list_of_axes = [ax2, ax3, ax4, ax5, ax6, ax7, ax8, ax9]
-    if userinput2 == 'none':
-        pass
-    else:
-        for ax in list_of_axes:
-            ax.plot(xmask1e, meanind1e[:, 1], 'mo')
-            ax.plot(xmask1e, meanind1e[:, 1], 'm')
+    if userinput2 is not 'none':
+        for counter, ax in enumerate(list_of_axes):
+            ax.plot(xmask1e, list_of_mean_test[counter][1], 'mo')
+            ax.plot(xmask1e, list_of_mean_test[counter][1], 'm')
 
     ax1.set_xlabel('Concentration')
     ax1.set_ylabel('OD')
@@ -208,28 +163,19 @@ def graphs():
     ax6.set_ylabel('OD')
     ax8.set_ylabel('OD')
 
-    # coeffeints of variance
-    cv1 = (SD1 / mean1tot) * 100
-    cv2 = (SD2 / mean2tot) * 100
-    cv3 = (SD3 / mean3tot) * 100
-    cv4 = (SD4 / mean4tot) * 100
-    cv5 = (SD5 / mean5tot) * 100
-    cv6 = (SD6 / mean6tot) * 100
-    cv7 = (SD7 / mean7tot) * 100
-    cv8 = (SD8 / mean8tot) * 100
-
-    meanlist = [mean1tot, mean2tot, mean3tot, mean4tot,
-                mean5tot, mean6tot, mean7tot, mean8tot]
-    sdlist = [SD1, SD2, SD3, SD4, SD5, SD6, SD7, SD8]
-    cvlist = [cv1, cv2, cv3, cv4, cv5, cv6, cv7, cv8]
-
     for counter, value in enumerate(list_of_axes):
         value.set_xlabel('%s ug/mL' % list_of_conc[counter])
 
-    for counter, item in enumerate(list_of_meanind):
-        helper.print_outside_SD(printable, item, list_of_meantot[counter],
-                                list_of_meaninde[counter], userinput2,
-                                sdlist[counter], list_of_conc[counter])
+    # Coeffs of variance
+    for counter, value in enumerate(list_of_final_means):
+        list_of_cv.append((list_of_sd[counter] /
+                           value) * 100)
+
+    # Prints where there is a point outside 2 or 3 SD
+    for counter, item in enumerate(list_of_means):
+        helper.print_outside_sd(printable, item, list_of_final_means[counter],
+                                list_of_mean_test[counter], userinput2,
+                                list_of_sd[counter], list_of_conc[counter])
 
     # Figure plotting
     fig1.tight_layout()
@@ -237,9 +183,10 @@ def graphs():
     plt.show()
     fig1.savefig('Control charts.tiff', dpi=600)
 
+    # File saving
     filename = 'ELISASTATS.csv'
     header = ['Concentration', 'Mean OD', 'SD', 'CV']
-    rows = map( None, list_of_conc, meanlist, sdlist, cvlist)
+    rows = map( None, list_of_conc, list_of_final_means, list_of_sd, list_of_cv)
     with open(filename, 'wb') as f:
         writer = csv.writer(f)
         writer.writerow(header)

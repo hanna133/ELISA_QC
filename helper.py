@@ -7,39 +7,36 @@ Created on Sat Aug 18 19:08:38 2018
 import numpy as np
 
 
-def get_means(data):
-    temp_list = data
-    # Take out concentration values
-    concentrations = temp_list[:, 0]
-    # Remove the blanks
-    concentrations = concentrations[np.logical_not(np.isnan(concentrations))]
-    nan_list=np.where(np.isnan(temp_list))
-    temp_list[nan_list]=np.take(concentrations, nan_list[1])
-    
-    mean_value = np.mean(temp_list, axis=0)
-    x_value = temp_list[:, 0]
-    y_value = temp_list[:, 1]
-    
-    return x_value, y_value, mean_value, concentrations
+def plot_everything(ax, sd, y, mean, xmask1):
+    ax.plot(xmask1, mean, 'ko', markersize=7)
+    ax.plot(xmask1, mean, 'k')
+    ax.axhline(y=y)
+    ax.axhline(y=(y + sd * 2), color='g', linewidth=2)
+    ax.axhline(y=(y - sd * 2), color='g', linewidth=2)
+    ax.axhline(y=(y + sd * 3), color='r', linewidth=2)
+    ax.axhline(y=(y - sd * 3), color='r', linewidth=2)
 
 
-def plot_everything(ax, y, xmask1, meanind):
-    mean1tot = np.mean(y)
+def get_final_mean(points):
+    """
+    Compute stats for each Point object at the same concentration.
+    :param points: Must be a list of point object of the same concentration.
+    :return: return standard deviation, y, and mean of them.
+    """
+    y = []
+    mean = []
+    for items in points:
+        y.append(items.get_y())
+        mean.append(items.get_mean())
     sd = np.std(y)
-    meanind = np.array(meanind)
-    meanind = meanind[:, 1]
-    ax.plot(xmask1, meanind, 'ko', markersize=7)
-    ax.plot(xmask1, meanind, 'k')
-    ax.axhline(y=mean1tot)
-    ax.axhline(y=(mean1tot + SD * 2), color='g', linewidth=2)
-    ax.axhline(y=(mean1tot - SD * 2), color='g', linewidth=2)
-    ax.axhline(y=(mean1tot + SD * 3), color='r', linewidth=2)
-    ax.axhline(y=(mean1tot - SD * 3), color='r', linewidth=2)
-
-    return sd, mean1tot, meanind
+    y = np.mean(y)
+    return sd, y, mean
 
 
-def print_outside_SD(printable, meanind, meantot, meaninde, userinput2, sd, conc):
+def print_outside_sd(printable, meanind, meantot, meaninde, userinput2, sd, conc):
+    """
+    To refactor
+    """
     if userinput2 == 'none':
         meanind = meaninde
     out2 = np.take(printable,
