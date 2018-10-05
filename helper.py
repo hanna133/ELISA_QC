@@ -5,6 +5,7 @@ Created on Sat Aug 18 19:08:38 2018
 @author: kercy_000
 """
 import numpy as np
+from itertools import repeat
 
 
 def plot_everything(ax, sd, y, mean, xmask1):
@@ -45,4 +46,10 @@ def print_outside_sd(printable, meanind, meantot, meaninde, userinput2, sd, conc
         print("Control set outside 3SD at %s: \n %s" % (conc, printable))
 
 
+def print_key(file_names):
 
+    file_names = [x for item in file_names for x in repeat(item, 3)]
+    xmask = list(range(len(file_names) // 3))
+    key = np.column_stack((np.array(list(range(len(np.array(
+        file_names[0::3]))))), np.array(file_names[0::3])))
+    return np.array(file_names[0::3]), xmask, key

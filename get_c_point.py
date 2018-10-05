@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class Point():
+class Point:
     """
     Each point is associated to a concentration,
     coordinates (x, y), and mean.

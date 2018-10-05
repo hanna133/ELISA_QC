@@ -5,9 +5,9 @@ import glob
 import csv
 from tkinter import *
 from tkinter import messagebox
-from itertools import repeat
 import helper
 import get_c_point
+from Extract_data import Good_file
 
 font_size = 6
 matplotlib.rc('font', size=font_size)
@@ -50,10 +50,6 @@ def graphs():
     ax8 = plt.subplot2grid((6, 6), (5, 0), colspan=2)
     ax9 = plt.subplot2grid((6, 6), (5, 2), colspan=2)
 
-    # Create empty lists to be filled in the loops
-    fnames = []
-    fnamese = []
-
     # Convert the userinputs to integers
     userinput1 = e1.get()
     userinput2 = e2.get()
@@ -64,19 +60,26 @@ def graphs():
     userinput5 = e5.get()
     userinput5 = int(userinput5)
 
+    input_dic = {'user_input1': userinput1, 'user_input2': userinput2,
+                 'user_input3': userinput3, 'user_input4': userinput4,
+                 'user_input5': userinput5}
+
     # Initialise lists
     list_of_points = []
     list_of_test_points = []
     list_of_axes = [ax2, ax3, ax4, ax5, ax6, ax7, ax8, ax9]
     list_of_conc = []
+    list_of_final_points = []
+    list_of_final_test_points = []
+    fnames = []
+    fnamese = []
 
-    # Extract data of good files
+    # Extract data ending with userinput1
     for files in glob.glob("*%s.csv" % userinput1):
         fnames.append(files)
         array = np.genfromtxt(files, delimiter=';',
                               skip_header=userinput3-1,
                               usecols=(userinput4-1, userinput5-1))
-
         list_of_slices = [array[0:3], array[3:6], array[6:9], array[9:12],
                           array[12:15], array[15:18], array[18:21],
                           array[21:24]]
@@ -88,8 +91,10 @@ def graphs():
         ax1.plot(list(map(get_c_point.Point.get_x, list_of_points)),
                  list(map(get_c_point.Point.get_y, list_of_points)),
                  'ko', markersize=5)
-
-    # Extract data on the files you want to test
+    good = Good_file(input_dic, data='csv')
+    print(good.list_of_points, 'bluh')
+    print(list_of_points, 'bleh')
+    # Extract data ending with userinput2 ("Test data")
     if userinput2 is not 'none':
         for files in glob.glob("*%s.csv" % userinput2):
             fnamese.append(files)
@@ -115,28 +120,14 @@ def graphs():
     list_of_test_points = np.array(np.split(
         np.array(list_of_test_points), len(fnamese)))
 
-    # Format the file names for printing in the terminal,
-    # and create a count for the x axis of the control charts
-    # TO REFACTOR
-    fnames = [x for item in fnames for x in repeat(item, 3)]
-    length = len(fnames)
-    xmask1 = list(range(length//3))
-    printable = np.array(fnames[0::3])
-    printcount = np.array(list(range(len(printable))))
-    key = np.column_stack((printcount, printable))
-    print('Standards Key')
+    # Format the file names for printing in the terminal
+    printable, xmask1, key = helper.print_key(fnames)
+    print('Good Key')
     print(key)
 
-    fnamese = [x for item in fnamese for x in repeat(item, 3)]
-    lengthe = len(fnamese)
-    xmask1e = list(range(lengthe//3))
-    printablee = np.array(fnamese[0::3])
-    printcounte = np.array(list(range(len(printablee))))
-    keye = np.column_stack((printcounte, printablee))
+    printablee, xmask1e, keye = helper.print_key(fnamese)
     print('Test Key')
     print(keye)
-    list_of_final_points = []
-    list_of_final_test_points = []
 
     # take the final means, then plot everything
     for counter, value in enumerate(list_of_axes):
