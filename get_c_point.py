@@ -41,4 +41,3 @@ class Final_point():
     def get_sd(self): return self._sd
 
     def get_cv(self): return self._cv
-

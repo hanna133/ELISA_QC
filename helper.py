@@ -49,7 +49,9 @@ def print_outside_sd(printable, meanind, meantot, meaninde, userinput2, sd, conc
 def print_key(file_names):
 
     file_names = [x for item in file_names for x in repeat(item, 3)]
+    print(file_names)
     xmask = list(range(len(file_names) // 3))
+    print(xmask)
     key = np.column_stack((np.array(list(range(len(np.array(
         file_names[0::3]))))), np.array(file_names[0::3])))
     return np.array(file_names[0::3]), xmask, key

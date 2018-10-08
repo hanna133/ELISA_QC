@@ -67,8 +67,6 @@ def graphs():
     # Initialise lists
     list_of_axes = [ax2, ax3, ax4, ax5, ax6, ax7, ax8, ax9]
     list_of_conc = []
-    list_of_final_points = []
-    list_of_final_test_points = []
 
     # Extract data ending with userinput1
     good_file = File_Parser(input_dic, data='csv', user_input=input_dic['user_input1'])
@@ -90,35 +88,20 @@ def graphs():
     else:
         print('no test group')
 
-    # Give a table of each point by concentration
-    list_of_points = np.array(np.split(
-        np.array(good_file.get_list_of_points()), len(good_file.get_file_names())))
-    list_of_test_points = np.array(np.split(
-        np.array(test_file.get_list_of_points()), len(test_file.get_file_names())))
-
     # Format the file names for printing in the terminal
     printable, xmask1, key = helper.print_key(good_file.get_file_names())
-    print('Good Key')
-    print(key)
-
-    printablee, xmask1e, keye = helper.print_key(test_file.get_file_names())
-    print('Test Key')
-    print(keye)
 
     # take the final means, then plot everything
     for counter, value in enumerate(list_of_axes):
-        final_point = get_c_point.Final_point(list_of_points[:, counter])
-        final_test_point = get_c_point.Final_point(list_of_test_points[:, counter])
-        helper.plot_everything(value, final_point.get_sd(),
-                               final_point.get_y(),
-                               final_point.get_mean(), xmask1)
-        list_of_final_points.append(final_point)
-        list_of_final_test_points.append(final_test_point)
+        helper.plot_everything(value, good_file.list_of_final_point[counter].get_sd(),
+                               good_file.list_of_final_point[counter].get_y(),
+                               good_file.list_of_final_point[counter].get_mean(),
+                               good_file.get_mask())
 
     if userinput2 is not 'none':
         for counter, ax in enumerate(list_of_axes):
-            ax.plot(xmask1e, list_of_final_test_points[counter].get_mean(), 'mo')
-            ax.plot(xmask1e, list_of_final_test_points[counter].get_mean(), 'm')
+            ax.plot(test_file.get_mask(), test_file.list_of_final_point[counter].get_mean(), 'mo')
+            ax.plot(test_file.get_mask(), test_file.list_of_final_point[counter].get_mean(), 'm')
             ax.set_xlabel('%s ug/mL' % good_file.get_list_of_conc()[counter])
 
     ax1.set_xlabel('Concentration')
@@ -129,11 +112,11 @@ def graphs():
     ax8.set_ylabel('OD')
 
     # Prints where there is a point outside 2 or 3 SD
-    for counter, item in enumerate(list_of_final_points):
+    for counter, item in enumerate(good_file.list_of_final_point):
         helper.print_outside_sd(printable,
-                                list(map(get_c_point.Point.get_mean, list_of_points[:, counter])),
+                                list(map(get_c_point.Point.get_mean, good_file.list_of_final_point)),
                                 item.get_y(),
-                                list_of_final_test_points[counter].get_mean(),
+                                test_file.list_of_final_point[counter].get_mean(),
                                 userinput2,
                                 item.get_sd(),
                                 good_file.get_list_of_conc()[counter])
@@ -147,9 +130,9 @@ def graphs():
     # File saving
 
     columns = [list_of_conc,
-               list(map(get_c_point.Final_point.get_y, list_of_final_points)),
-               list(map(get_c_point.Final_point.get_sd, list_of_final_points)),
-               list(map(get_c_point.Final_point.get_cv, list_of_final_points))]
+               list(map(get_c_point.Final_point.get_y, good_file.list_of_final_point)),
+               list(map(get_c_point.Final_point.get_sd, good_file.list_of_final_point)),
+               list(map(get_c_point.Final_point.get_cv, good_file.list_of_final_point))]
 
     with open('ELISASTATS.csv', 'w',  encoding='utf-8') as f:
         writer = csv.writer(f, delimiter=";")
