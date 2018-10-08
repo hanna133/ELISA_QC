@@ -11,12 +11,9 @@ class Point:
         data[np.where(np.isnan(data))] = np.take(self._concentration,
                                                  np.where(np.isnan(data))[1])
         self._mean = np.mean(data, axis=0)
-        self._x = data[:, 0]
-        self._y = data[:, 1]
+        self._absorbance = data[:, 1]
 
-    def get_x(self): return self._x
-
-    def get_y(self): return self._y
+    def get_absorbance(self): return self._absorbance
 
     def get_mean(self): return self._mean
 
@@ -31,7 +28,7 @@ class Final_point():
         y = []
         self._mean = []
         for item in data:
-            y.append(item.get_y())
+            y.append(item.get_absorbance())
             self._mean.append(item.get_mean()[1])
         self._sd = np.std(y)
         self._y = np.mean(y)

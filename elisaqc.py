@@ -7,7 +7,7 @@ from tkinter import *
 from tkinter import messagebox
 import helper
 import get_c_point
-from Extract_data import Good_file
+from Extract_data import File_Parser
 
 font_size = 6
 matplotlib.rc('font', size=font_size)
@@ -65,67 +65,43 @@ def graphs():
                  'user_input5': userinput5}
 
     # Initialise lists
-    list_of_points = []
-    list_of_test_points = []
     list_of_axes = [ax2, ax3, ax4, ax5, ax6, ax7, ax8, ax9]
     list_of_conc = []
     list_of_final_points = []
     list_of_final_test_points = []
-    fnames = []
-    fnamese = []
 
     # Extract data ending with userinput1
-    for files in glob.glob("*%s.csv" % userinput1):
-        fnames.append(files)
-        array = np.genfromtxt(files, delimiter=';',
-                              skip_header=userinput3-1,
-                              usecols=(userinput4-1, userinput5-1))
-        list_of_slices = [array[0:3], array[3:6], array[6:9], array[9:12],
-                          array[12:15], array[15:18], array[18:21],
-                          array[21:24]]
-        for elements in list_of_slices:
-            point = get_c_point.Point(elements)
-            list_of_points.append(point)
-            list_of_conc.append(np.mean(point.get_concentration()))
+    good_file = File_Parser(input_dic, data='csv', user_input=input_dic['user_input1'])
 
-        ax1.plot(list(map(get_c_point.Point.get_x, list_of_points)),
-                 list(map(get_c_point.Point.get_y, list_of_points)),
-                 'ko', markersize=5)
-    good = Good_file(input_dic, data='csv')
-    print(good.list_of_points, 'bluh')
-    print(list_of_points, 'bleh')
+    ax1.plot(list(map(get_c_point.Point.get_concentration,
+                      good_file.get_list_of_points())),
+             list(map(get_c_point.Point.get_absorbance,
+                      good_file.get_list_of_points())), 'ko', markersize=5)
+
     # Extract data ending with userinput2 ("Test data")
     if userinput2 is not 'none':
-        for files in glob.glob("*%s.csv" % userinput2):
-            fnamese.append(files)
-            array = np.genfromtxt(files, delimiter=';',
-                                  skip_header=userinput3-1,
-                                  usecols=(userinput4-1, userinput5-1))
+        test_file = File_Parser(input_dic, data='csv', user_input=input_dic['user_input2'])
 
-            list_of_slices = [array[0:3], array[3:6], array[6:9], array[9:12],
-                              array[12:15], array[15:18], array[18:21],
-                              array[21:24]]
-            for elements in list_of_slices:
-                point = get_c_point.Point(elements)
-                list_of_test_points.append(point)
-            ax1.plot(list(map(get_c_point.Point.get_x, list_of_test_points)),
-                     list(map(get_c_point.Point.get_y, list_of_test_points)),
-                     'mo', markersize=5)
+        ax1.plot(list(map(get_c_point.Point.get_concentration,
+                          test_file.get_list_of_points())),
+                 list(map(get_c_point.Point.get_absorbance,
+                          test_file.get_list_of_points())),
+                 'mo', markersize=5)
     else:
         print('no test group')
 
     # Give a table of each point by concentration
     list_of_points = np.array(np.split(
-        np.array(list_of_points), len(fnames)))
+        np.array(good_file.get_list_of_points()), len(good_file.get_file_names())))
     list_of_test_points = np.array(np.split(
-        np.array(list_of_test_points), len(fnamese)))
+        np.array(test_file.get_list_of_points()), len(test_file.get_file_names())))
 
     # Format the file names for printing in the terminal
-    printable, xmask1, key = helper.print_key(fnames)
+    printable, xmask1, key = helper.print_key(good_file.get_file_names())
     print('Good Key')
     print(key)
 
-    printablee, xmask1e, keye = helper.print_key(fnamese)
+    printablee, xmask1e, keye = helper.print_key(test_file.get_file_names())
     print('Test Key')
     print(keye)
 
@@ -143,7 +119,7 @@ def graphs():
         for counter, ax in enumerate(list_of_axes):
             ax.plot(xmask1e, list_of_final_test_points[counter].get_mean(), 'mo')
             ax.plot(xmask1e, list_of_final_test_points[counter].get_mean(), 'm')
-            ax.set_xlabel('%s ug/mL' % list_of_conc[counter])
+            ax.set_xlabel('%s ug/mL' % good_file.get_list_of_conc()[counter])
 
     ax1.set_xlabel('Concentration')
     ax1.set_ylabel('OD')
@@ -160,7 +136,7 @@ def graphs():
                                 list_of_final_test_points[counter].get_mean(),
                                 userinput2,
                                 item.get_sd(),
-                                list_of_conc[counter])
+                                good_file.get_list_of_conc()[counter])
 
     # Figure plotting
     fig1.tight_layout()
