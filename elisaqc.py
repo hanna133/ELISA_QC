@@ -72,37 +72,34 @@ def graphs():
     good_file = File_Parser(input_dic, data='csv', user_input=input_dic['user_input1'])
 
     ax1.plot(list(map(get_c_point.Point.get_concentration,
-                      good_file.get_list_of_points())),
+                      good_file.list_of_points)),
              list(map(get_c_point.Point.get_absorbance,
-                      good_file.get_list_of_points())), 'ko', markersize=5)
+                      good_file.list_of_points)), 'ko', markersize=5)
 
     # Extract data ending with userinput2 ("Test data")
     if userinput2 is not 'none':
         test_file = File_Parser(input_dic, data='csv', user_input=input_dic['user_input2'])
 
         ax1.plot(list(map(get_c_point.Point.get_concentration,
-                          test_file.get_list_of_points())),
+                          test_file.list_of_points)),
                  list(map(get_c_point.Point.get_absorbance,
-                          test_file.get_list_of_points())),
+                          test_file.list_of_points)),
                  'mo', markersize=5)
     else:
         print('no test group')
 
-    # Format the file names for printing in the terminal
-    printable, xmask1, key = helper.print_key(good_file.get_file_names())
-
     # take the final means, then plot everything
     for counter, value in enumerate(list_of_axes):
-        helper.plot_everything(value, good_file.list_of_final_point[counter].get_sd(),
-                               good_file.list_of_final_point[counter].get_y(),
-                               good_file.list_of_final_point[counter].get_mean(),
-                               good_file.get_mask())
+        helper.plot_everything(value, good_file.list_of_final_point[counter].sd,
+                               good_file.list_of_final_point[counter].y,
+                               good_file.list_of_final_point[counter].mean,
+                               good_file.mask)
 
     if userinput2 is not 'none':
         for counter, ax in enumerate(list_of_axes):
-            ax.plot(test_file.get_mask(), test_file.list_of_final_point[counter].get_mean(), 'mo')
-            ax.plot(test_file.get_mask(), test_file.list_of_final_point[counter].get_mean(), 'm')
-            ax.set_xlabel('%s ug/mL' % good_file.get_list_of_conc()[counter])
+            ax.plot(test_file.mask, test_file.list_of_final_point[counter].mean, 'mo')
+            ax.plot(test_file.mask, test_file.list_of_final_point[counter].mean, 'm')
+            ax.set_xlabel('%s ug/mL' % good_file.list_of_conc[counter])
 
     ax1.set_xlabel('Concentration')
     ax1.set_ylabel('OD')
@@ -110,16 +107,15 @@ def graphs():
     ax4.set_ylabel('OD')
     ax6.set_ylabel('OD')
     ax8.set_ylabel('OD')
-
     # Prints where there is a point outside 2 or 3 SD
     for counter, item in enumerate(good_file.list_of_final_point):
-        helper.print_outside_sd(printable,
+        helper.print_outside_sd(helper.print_key(good_file.file_names),
                                 list(map(get_c_point.Point.get_mean, good_file.list_of_final_point)),
-                                item.get_y(),
-                                test_file.list_of_final_point[counter].get_mean(),
+                                item.y,
+                                test_file.list_of_final_point[counter].mean,
                                 userinput2,
-                                item.get_sd(),
-                                good_file.get_list_of_conc()[counter])
+                                item.sd,
+                                good_file.list_of_conc[counter])
 
     # Figure plotting
     fig1.tight_layout()
@@ -130,9 +126,12 @@ def graphs():
     # File saving
 
     columns = [list_of_conc,
-               list(map(get_c_point.Final_point.get_y, good_file.list_of_final_point)),
-               list(map(get_c_point.Final_point.get_sd, good_file.list_of_final_point)),
-               list(map(get_c_point.Final_point.get_cv, good_file.list_of_final_point))]
+               list(map(get_c_point.Final_point.get_y,
+                        good_file.list_of_final_point)),
+               list(map(get_c_point.Final_point.get_sd,
+                        good_file.list_of_final_point)),
+               list(map(get_c_point.Final_point.get_cv,
+                        good_file.list_of_final_point))]
 
     with open('ELISASTATS.csv', 'w',  encoding='utf-8') as f:
         writer = csv.writer(f, delimiter=";")
